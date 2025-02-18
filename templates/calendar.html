@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Календарь - Task Tracker{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/main.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="calendar-container">
+    <div id="calendar"></div>
+</div>
+
+<!-- Модальное окно для добавления задачи -->
+<div id="addTaskModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Новая задача</h2>
+        <form id="addTaskForm">
+            <input type="text" name="title" placeholder="Название задачи" required>
+            <textarea name="description" id="addDescription" placeholder="Описание задачи" class="cleditor"></textarea>
+            <input type="date" name="due_date" required>
+            <div class="task-options">
+                <div class="switch-container">
+                    <label class="switch">
+                        <input type="checkbox" name="important" role="switch">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="switch-label">Важное</span>
+                </div>
+                <div class="switch-container">
+                    <label class="switch">
+                        <input type="checkbox" name="urgent" role="switch">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="switch-label">Срочное</span>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Добавить задачу</button>
+        </form>
+    </div>
+</div>
+
+<!-- Модальное окно для просмотра задачи -->
+<div id="viewTaskModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2 id="taskTitle"></h2>
+        <p id="taskDescription"></p>
+        <div id="taskMeta">
+            <span id="taskDate"></span>
+            <span id="taskStatus"></span>
+        </div>
+        <div class="task-actions">
+            <button onclick="editTask(currentTaskId)" class="btn btn-primary">
+                <i class="fas fa-edit"></i> Редактировать
+            </button>
+            <button onclick="toggleTaskComplete(currentTaskId)" class="btn btn-success">
+                <i class="fas fa-check"></i> <span id="completeButtonText">Завершить</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для редактирования задачи -->
+<div id="editTaskModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Редактировать задачу</h2>
+        <form id="editTaskForm">
+            <input type="text" name="title" placeholder="Название задачи" required>
+            <textarea name="description" id="editDescription" placeholder="Описание задачи"></textarea>
+            <input type="date" name="due_date" required>
+            <div class="task-options">
+                <div class="switch-container">
+                    <label class="switch">
+                        <input type="checkbox" name="important" role="switch">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="switch-label">Важное</span>
+                </div>
+                <div class="switch-container">
+                    <label class="switch">
+                        <input type="checkbox" name="urgent" role="switch">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="switch-label">Срочное</span>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/main.min.js"></script>
+<script>
+    const calendarEvents = {{ tasks|tojson|safe }};
+</script>
+<script src="{{ url_for('static', filename='js/calendar.js') }}"></script>
+{% endblock %}

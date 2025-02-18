@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Задачи - Task Tracker{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-cleditor/1.4.5/jquery.cleditor.css">
+{% endblock %}
+
+{% block extra_js_head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cleditor/1.4.5/jquery.cleditor.min.js"></script>
+{% endblock %}
+
+
+{% block content %}
+<div class="tasks-section">
+    <div class="filter-controls">
+        <div class="date-filter">
+            <input type="date" id="taskDate" onchange="filterTasksByDate(this.value)" value="{{ today }}">
+        </div>
+        <div class="sort-filter">
+            <select id="sortTasks" onchange="sortTasks(this.value)">
+                <option value="all">Все задачи</option>
+                <option value="normal">Обычные</option>
+                <option value="important">Важные</option>
+                <option value="urgent">Срочные</option>
+                <option value="completed">Выполненные</option>
+            </select>
+            <button onclick="exportTasks()" class="btn btn-primary">
+                <i class="fas fa-file-export"></i> Экспорт
+            </button>
+            <button onclick="printTasks()" class="btn btn-secondary">
+                <i class="fas fa-print"></i> Печать
+            </button>
+        </div>
+    </div>
+
+    <div class="tasks" id="tasksList">
+        {% for task in tasks %}
+        <div class="task {% if task.completed %}completed{% endif %}" 
+             data-date="{{ task.due_date.strftime('%Y-%m-%d') }}" 
+             data-task-id="{{ task.id }}">
+            <div class="pd-20">
+                <h4 class="h4">{{ task.title }}</h4>
+                <p class="task-description">{{ task.description | safe }}</p>
+                <div class="task-date">
+                    <i class="fas fa-calendar-alt"></i> {{ task.due_date.strftime('%d.%m.%Y') }}
+                </div>
+                <div class="task-actions">
+                    <button onclick="toggleComplete('{{ task.id }}')" class="btn btn-success btn-sm">
+                        <i class="fas fa-check"></i> {{ 'Отменить' if task.completed else 'Завершить' }}
+                    </button>
+                    <button onclick="handleEditTask('{{ task.id }}')" class="btn btn-primary btn-sm">
+                        <i class="fas fa-edit"></i> Редактировать
+                    </button>
+                    <button onclick="toggleImportant('{{ task.id }}')" class="btn btn-warning btn-sm {% if task.important %}active{% endif %}">
+                        <i class="fas fa-star"></i> Важное
+                    </button>
+                    <button onclick="toggleUrgent('{{ task.id }}')" class="btn btn-danger btn-sm {% if task.urgent %}active{% endif %}">
+                        <i class="fas fa-exclamation"></i> Срочное
+                    </button>
+                    <button onclick="deleteTask('{{ task.id }}')" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash"></i> Удалить
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Модальное окно редактирования -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Редактировать задачу</h2>
+        <form id="editTaskForm">
+            <input type="hidden" id="editTaskId">
+            <input type="text" id="editTitle" placeholder="Название задачи" required>
+            <textarea id="editDescription" placeholder="Описание задачи"></textarea>
+            <input type="date" id="editDueDate" required>
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Инициализация будет происходить в tasks.js
+});
+</script>
+<script src="{{ url_for('static', filename='js/tasks.js') }}"></script>
+{% endblock %}

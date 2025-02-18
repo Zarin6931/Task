@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Журнал - Task Tracker{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.7.3/dist/css/uikit.min.css" />
+{% endblock %}
+
+{% block content %}
+<div class="card-box mb-30">
+    <div class="pd-20">
+        <h4 class="text-blue h4">Добавить запись</h4>
+        <form action="{{ url_for('add_journal_entry') }}" method="POST">
+            <input type="text" name="title" class="form-control" placeholder="Заголовок" required>
+            <textarea name="content" class="form-control" placeholder="Содержание" required></textarea>
+            <select name="entry_type" class="form-control">
+                <option value="Feature">Feature</option>
+                <option value="Fix">Fix</option>
+                <option value="Test">Test</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Добавить запись</button>
+        </form>
+    </div>
+</div>
+
+<div class="uk-container uk-padding">
+    <div class="uk-timeline">
+        {% for entry in entries %}
+        <div class="uk-timeline-item">
+            <div class="uk-timeline-icon">
+                <span class="uk-badge"><span uk-icon="check"></span></span>
+            </div>
+            <div class="uk-timeline-content">
+                <div class="uk-card uk-card-default uk-margin-medium-bottom uk-overflow-auto">
+                    <div class="uk-card-header">
+                        <div class="uk-grid-small uk-flex-middle" uk-grid>
+                            <h3 class="uk-card-title">
+                                <time datetime="{{ entry.created_date }}">
+                                    {{ entry.created_date.strftime('%d.%m.%Y') }}
+                                </time>
+                            </h3>
+                            <span class="uk-label uk-label-{{ 'success' if entry.entry_type == 'Feature' else 'warning' if entry.entry_type == 'Test' else 'danger' }} uk-margin-auto-left">
+                                {{ entry.entry_type }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="uk-card-body">
+                        <h4>{{ entry.title }}</h4>
+                        <p>{{ entry.content }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/uikit@3.7.3/dist/js/uikit.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/uikit@3.7.3/dist/js/uikit-icons.min.js"></script>
+<script src="{{ url_for('static', filename='js/journal.js') }}"></script>
+{% endblock %}

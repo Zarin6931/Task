@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Главная - Task Tracker{% endblock %}
+
+{% block content %}
+<div class="dashboard-widgets">
+    <!-- Первая строка: статистика и часы -->
+    <div class="widgets-row stats-and-clock">
+        <!-- Виджет срочных задач -->
+        <div class="widget stat-widget-card">
+            <div class="stat-item">
+                <div class="circular-progress urgent" data-value="{{ (stats.total > 0) and (stats.urgent * 100 / stats.total)|round|int or 0 }}">
+                    <div class="value-container">{{ stats.urgent }}</div>
+                </div>
+                <span class="stat-label">Срочных</span>
+            </div>
+        </div>
+        
+        <!-- Виджет важных задач -->
+        <div class="widget stat-widget-card">
+            <div class="stat-item">
+                <div class="circular-progress important" data-value="{{ (stats.total > 0) and (stats.important * 100 / stats.total)|round|int or 0 }}">
+                    <div class="value-container">{{ stats.important }}</div>
+                </div>
+                <span class="stat-label">Важных</span>
+            </div>
+        </div>
+        
+        <!-- Виджет обычных задач -->
+        <div class="widget stat-widget-card">
+            <div class="stat-item">
+                <div class="circular-progress" data-value="{{ (stats.total > 0) and (stats.regular * 100 / stats.total)|round|int or 0 }}">
+                    <div class="value-container">{{ stats.regular }}</div>
+                </div>
+                <span class="stat-label">Обычных</span>
+            </div>
+        </div>
+        
+        <!-- Виджет выполненных задач -->
+        <div class="widget stat-widget-card">
+            <div class="stat-item">
+                <div class="circular-progress completed" data-value="{{ (stats.total > 0) and (stats.completed * 100 / stats.total)|round|int or 0 }}">
+                    <div class="value-container">{{ stats.completed }}</div>
+                </div>
+                <span class="stat-label">Выполнено</span>
+            </div>
+        </div>
+
+        <!-- Виджет часов -->
+        <div class="widget clock-widget">
+            <div class="clock-container">
+                <div class="clock" id="clock"></div>
+                <div class="clock-weekday" id="weekday"></div>
+                <div class="clock-date" id="date"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Вторая строка: виджеты задач -->
+    <div class="widgets-row tasks-widgets">
+        <!-- Виджет срочных задач -->
+        <div class="widget urgent-tasks-widget">
+            <h3>Срочные задачи</h3>
+            <div class="task-list" id="urgentTasksList"></div>
+        </div>
+
+        <!-- Виджет важных задач -->
+        <div class="widget important-tasks-widget">
+            <h3>Важные задачи</h3>
+            <div class="task-list" id="importantTasksList"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/index.js') }}"></script>
+{% endblock %}
